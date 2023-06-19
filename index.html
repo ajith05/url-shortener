@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Yet Another URL Shortener</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<style>
+html, body {
+   margin: auto;
+   width: 80%;
+}
+#footer {
+   position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+}
+#result-block {
+   display: none;
+}
+</style>
+</head>
+<body>
+<center>
+<h2>Yet Another URL Shortener</h2>
+<label for="input_url">URL :</label>
+<input type="url" id="input_url" name="input_url" placeholder="Paste the link here">
+<input type="button" id="res-button" value="Shorten" onclick="shorten()">
+<p id="result-block"> Your shortened link is <a id="result-link"></a></p>
+<p>Hey, there. Thanks for visiting. This URL shortener is made purely for fun and learning. This site is minimal on purpose. This is in no way a replacement to bit.ly or other popular URL shorteners.</p>
+<div id="footer">
+	<p>Made by <a href="https://www.linkedin.com/in/ajith05">Ajith</a> for fun and learning<br />
+	<a href="https://github.com/ajith05/url-shortener">Source Code</a><br />
+	Powered by <a href="https://railway.app?referralCode=ajith05">Railway</a></p>
+</div>
+</center>
+<script>
+function shorten() {
+	document.getElementById("res-button").disabled = true;
+	
+	const url_text = document.getElementById("input_url").value;
+	console.log(url_text);
+	
+	const result_block = document.getElementById("result-block");
+	const result_link_element = document.getElementById("result-link");
+	
+	fetch("/create", {
+		method: "POST",
+		body: JSON.stringify({
+			url: url_text
+		}),
+		headers: {
+			"Content-type": "application/json; charset=UTF-8"
+		}
+	}).then((response) => response.text())
+	  .then((text) => {
+		console.log(text);
+		result_link_element.innerHTML = text;
+		result_link_element.href = text;
+		result_block.style.display = "block";
+		
+		document.getElementById("res-button").disabled = false;
+	  });
+}
+</script>
+</body>
+</html>

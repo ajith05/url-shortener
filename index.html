@@ -42,7 +42,6 @@ function shorten() {
 	document.getElementById("res-button").disabled = true;
 	
 	const url_text = document.getElementById("input_url").value;
-	console.log(url_text);
 	
 	const result_block = document.getElementById("result-block");
 	const result_link_element = document.getElementById("result-link");
@@ -57,7 +56,6 @@ function shorten() {
 		}
 	}).then((response) => response.text())
 	  .then((text) => {
-		console.log(text);
 		result_link_element.innerHTML = text;
 		result_link_element.href = text;
 		result_block.style.display = "block";

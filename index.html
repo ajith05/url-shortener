@@ -31,7 +31,8 @@ html, body {
 <center>
 <h2>Yet Another URL Shortener</h2>
 <label for="input_url">URL :</label>
-<input type="url" id="input_url" name="input_url" placeholder="Paste the link here" required>
+<input type="url" id="input_url" name="input_url" placeholder="Paste the link here" required><br />
+<input type="button" id="reset-button" value="Reset" onclick="reset()">
 <input type="button" id="req-button" value="Shorten" onclick="shorten()">
 <p id="loader">Loading...</p>
 <p id="error-block">Something went wrong. Please try again.</p>
@@ -46,6 +47,7 @@ html, body {
 <script>
 function shorten() {
 	document.getElementById("req-button").disabled = true;
+	document.getElementById("reset-button").disabled = true;
 	
 	const error_block = document.getElementById("error-block");
 	const result_block = document.getElementById("result-block");
@@ -57,6 +59,7 @@ function shorten() {
 	const url_element = document.getElementById("input_url");
 	if (!url_element.checkValidity()) {
 		document.getElementById("req-button").disabled = false;
+		document.getElementById("reset-button").disabled = false;
 		loader.style.display = "none";
 		error_block.style.display = "block";
 		error_block.innerHTML = "Submitted URL is not complete or valid. Please check and try again.";
@@ -91,13 +94,22 @@ function shorten() {
 		result_block.style.display = "block";
 		
 		document.getElementById("req-button").disabled = false;
+		document.getElementById("reset-button").disabled = false;
 	}).catch((e) => {
 		loader.style.display = "none";
 		error_block.style.display = "block";
 		error_block.innerHTML = e.message;
 		
 		document.getElementById("req-button").disabled = false;
+		document.getElementById("reset-button").disabled = false;
 	});
+}
+
+function reset() {
+	document.getElementById("input_url").value = "";
+	document.getElementById("loader").style.display = "none";
+	document.getElementById("error-block").style.display = "none";
+	document.getElementById("result-block").style.display = "none";
 }
 </script>
 </body>

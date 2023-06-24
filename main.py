@@ -13,7 +13,7 @@ from fastapi.responses import (
     PlainTextResponse,
     RedirectResponse
 )
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 import uvicorn
 
 db_conn_pools: list[asyncpg.Pool] = []
@@ -23,7 +23,7 @@ with open("index.html") as f:
 
 
 class URL(BaseModel):
-    url: str
+    url: HttpUrl
 
 
 @asynccontextmanager

@@ -18,8 +18,12 @@ html, body {
    bottom: 0;
    width: 100%;
 }
-#result-block {
+#result-block, #loader {
    display: none;
+}
+#error-block {
+   display: none;
+   color: red;
 }
 </style>
 </head>
@@ -27,8 +31,10 @@ html, body {
 <center>
 <h2>Yet Another URL Shortener</h2>
 <label for="input_url">URL :</label>
-<input type="url" id="input_url" name="input_url" placeholder="Paste the link here">
-<input type="button" id="res-button" value="Shorten" onclick="shorten()">
+<input type="url" id="input_url" name="input_url" placeholder="Paste the link here" required>
+<input type="button" id="req-button" value="Shorten" onclick="shorten()">
+<p id="loader">Loading...</p>
+<p id="error-block">Something went wrong. Please try again.</p>
 <p id="result-block"> Your shortened link is <a id="result-link"></a></p>
 <p>Hey, there. Thanks for visiting. This URL shortener is made purely for fun and learning. This site is minimal on purpose. This is in no way a replacement to bit.ly or other popular URL shorteners.</p>
 <div id="footer">
@@ -39,11 +45,25 @@ html, body {
 </center>
 <script>
 function shorten() {
-	document.getElementById("res-button").disabled = true;
+	document.getElementById("req-button").disabled = true;
 	
-	const url_text = document.getElementById("input_url").value;
-	
+	const error_block = document.getElementById("error-block");
 	const result_block = document.getElementById("result-block");
+	const loader = document.getElementById("loader");
+	error_block.style.display = "none";
+	result_block.style.display = "none";
+	loader.style.display = "block";
+	
+	const url_element = document.getElementById("input_url");
+	if (!url_element.checkValidity()) {
+		document.getElementById("req-button").disabled = false;
+		loader.style.display = "none";
+		error_block.style.display = "block";
+		error_block.innerHTML = "Submitted URL is not complete or valid. Please check and try again.";
+		return;
+	}
+	const url_text = url_element.value;
+	
 	const result_link_element = document.getElementById("result-link");
 	
 	fetch("/create", {
@@ -54,14 +74,30 @@ function shorten() {
 		headers: {
 			"Content-type": "application/json; charset=UTF-8"
 		}
-	}).then((response) => response.text())
-	  .then((text) => {
+	}).then((response) => {
+		if (response.ok) {
+			return response.text();
+		} else {
+			if (response.status === 422) {
+				throw new Error("Submitted URL is not complete or valid. Please check and try again.");
+			} else {
+				throw new Error("Something went wrong. Please try again.");
+			}
+		}
+	}).then((text) => {
+		loader.style.display = "none";
 		result_link_element.innerHTML = text;
 		result_link_element.href = text;
 		result_block.style.display = "block";
 		
-		document.getElementById("res-button").disabled = false;
-	  });
+		document.getElementById("req-button").disabled = false;
+	}).catch((e) => {
+		loader.style.display = "none";
+		error_block.style.display = "block";
+		error_block.innerHTML = e.message;
+		
+		document.getElementById("req-button").disabled = false;
+	});
 }
 </script>
 </body>
